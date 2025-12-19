@@ -8,10 +8,7 @@ Inspiré de github.com/oblassgit/refurbished-steam-deck-notifier
 import os
 import sys
 import json
-import smtplib
 import requests
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from pathlib import Path
 
@@ -20,10 +17,9 @@ from pathlib import Path
 # Pays (codes: FR, DE, US, UK, etc.)
 COUNTRY_CODE = os.environ.get("COUNTRY_CODE", "FR")
 
-# Notifications Email
-EMAIL_FROM = os.environ.get("EMAIL_FROM", "")
-EMAIL_TO = os.environ.get("EMAIL_TO", "")
-EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD", "")
+# Notification Signal via CallMeBot (recommandé)
+SIGNAL_PHONE = os.environ.get("SIGNAL_PHONE", "")  # Format: +33612345678
+SIGNAL_APIKEY = os.environ.get("SIGNAL_APIKEY", "")
 
 # Notification Discord (optionnel)
 DISCORD_WEBHOOK = os.environ.get("DISCORD_WEBHOOK", "")
@@ -57,27 +53,26 @@ def check_stock(package_id: str, country: str = "FR"):
         return None
 
 
-def send_email(subject: str, body: str) -> bool:
-    """Envoie un email."""
-    if not all([EMAIL_FROM, EMAIL_TO, EMAIL_PASSWORD]):
+def send_signal(message: str) -> bool:
+    """Envoie une notification Signal via CallMeBot."""
+    if not all([SIGNAL_PHONE, SIGNAL_APIKEY]):
         return False
 
     try:
-        msg = MIMEMultipart()
-        msg["From"] = EMAIL_FROM
-        msg["To"] = EMAIL_TO
-        msg["Subject"] = subject
-        msg.attach(MIMEText(body, "html"))
+        # API CallMeBot pour Signal
+        url = "https://signal.callmebot.com/signal/send.php"
+        params = {
+            "phone": SIGNAL_PHONE,
+            "apikey": SIGNAL_APIKEY,
+            "text": message,
+        }
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
 
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls()
-            server.login(EMAIL_FROM, EMAIL_PASSWORD)
-            server.send_message(msg)
-
-        print(f"   📧 Email envoyé à {EMAIL_TO}")
+        print(f"   📱 Signal envoyé à {SIGNAL_PHONE}")
         return True
     except Exception as e:
-        print(f"   ❌ Erreur email: {e}")
+        print(f"   ❌ Erreur Signal: {e}")
         return False
 
 
@@ -170,31 +165,16 @@ def main():
         print("   NOUVEAU STOCK DÉTECTÉ!")
         print("🚨" * 20)
 
-        models_text = "\n".join([f"  • {m}" for m in newly_available])
+        models_text = "\n".join([f"• {m}" for m in newly_available])
 
-        # Email
-        if EMAIL_FROM:
-            email_body = f"""
-            <html>
-            <body style="font-family: Arial, sans-serif;">
-                <h1 style="color: #1b2838;">🎮 Steam Deck EN STOCK!</h1>
-                <h2>Modèles disponibles:</h2>
-                <ul>
-                    {''.join(f'<li><strong>{m}</strong></li>' for m in newly_available)}
-                </ul>
-                <p style="margin: 20px 0;">
-                    <a href="{STORE_URL}"
-                       style="background-color: #1b2838; color: white; padding: 15px 30px;
-                              text-decoration: none; border-radius: 5px; font-size: 18px;">
-                        👉 ACHETER MAINTENANT
-                    </a>
-                </p>
-                <hr>
-                <p><small>Détecté le {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Pays: {COUNTRY_CODE}</small></p>
-            </body>
-            </html>
-            """
-            send_email(f"🎮 ALERTE: Steam Deck Refurbished DISPONIBLE ({COUNTRY_CODE})!", email_body)
+        # Signal
+        if SIGNAL_PHONE:
+            signal_message = f"""🎮 STEAM DECK EN STOCK!
+
+{models_text}
+
+👉 {STORE_URL}"""
+            send_signal(signal_message)
 
         # Discord
         if DISCORD_WEBHOOK:

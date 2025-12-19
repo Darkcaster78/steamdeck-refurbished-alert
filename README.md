@@ -1,32 +1,31 @@
 # Steam Deck Refurbished Monitor
 
-Surveille la disponibilité des Steam Deck reconditionnés via l'API officielle Steam et envoie des alertes (Email / Discord).
+Surveille la disponibilité des Steam Deck reconditionnés via l'API officielle Steam et envoie des alertes Signal.
 
 ## Fonctionnalités
 
 - Utilise l'API officielle Steam (`CheckInventoryAvailableByPackage`)
 - Surveille les 5 modèles : 64GB LCD, 256GB LCD, 512GB LCD, 512GB OLED, 1TB OLED
-- Notifications Email (Gmail) et/ou Discord webhook
+- Notifications Signal (via CallMeBot) et/ou Discord
 - Détection des changements de stock (évite le spam)
 - Support multi-pays (FR, DE, US, UK, etc.)
 
 ## Déploiement GitHub Actions
 
-### 1. Fork/Clone ce repo
+### 1. Configurer Signal avec CallMeBot
 
-```bash
-git clone https://github.com/TON_USERNAME/steamdeck-monitor.git
-```
+1. Ajoute ce numéro à tes contacts Signal : **+34 644 52 74 88**
+2. Envoie-lui ce message : `I allow callmebot to send me messages`
+3. Tu recevras une réponse avec ton **apikey**
 
-### 2. Configurer les secrets
+### 2. Configurer les secrets GitHub
 
-Dans ton repo GitHub : **Settings** → **Secrets and variables** → **Actions**
+Dans ton repo : **Settings** → **Secrets and variables** → **Actions**
 
 | Secret | Description | Requis |
 |--------|-------------|--------|
-| `EMAIL_FROM` | Ton adresse Gmail | Oui |
-| `EMAIL_TO` | Adresse de destination | Oui |
-| `EMAIL_PASSWORD` | [Mot de passe d'application Gmail](https://myaccount.google.com/apppasswords) | Oui |
+| `SIGNAL_PHONE` | Ton numéro (ex: +33612345678) | Oui |
+| `SIGNAL_APIKEY` | Clé API reçue de CallMeBot | Oui |
 | `DISCORD_WEBHOOK` | URL webhook Discord | Non |
 
 ### 3. Activer le workflow
@@ -47,12 +46,10 @@ env:
 ## Usage local
 
 ```bash
-pip install -r requirements.txt
+pip install requests
 
-# Définir les variables
-export EMAIL_FROM="ton.email@gmail.com"
-export EMAIL_TO="ton.email@gmail.com"
-export EMAIL_PASSWORD="xxxx xxxx xxxx xxxx"
+export SIGNAL_PHONE="+33612345678"
+export SIGNAL_APIKEY="ton_apikey"
 export COUNTRY_CODE="FR"
 
 python monitor_api.py

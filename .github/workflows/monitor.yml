@@ -26,9 +26,8 @@ jobs:
 
       - name: Check Steam Deck availability
         env:
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          SIGNAL_PHONE: ${{ secrets.SIGNAL_PHONE }}
+          SIGNAL_APIKEY: ${{ secrets.SIGNAL_APIKEY }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           COUNTRY_CODE: FR
         run: python monitor_api.py
