@@ -27,11 +27,8 @@ DISCORD_WEBHOOK = os.environ.get("DISCORD_WEBHOOK", "")
 # API Steam
 STEAM_API_URL = "https://api.steampowered.com/IPhysicalGoodsService/CheckInventoryAvailableByPackage/v1"
 
-# Package IDs des Steam Deck Refurbished
+# Package IDs des Steam Deck Refurbished (OLED uniquement)
 STEAM_DECK_PACKAGES = {
-    "903905": {"name": "Steam Deck 64GB LCD", "storage": "64GB", "type": "LCD"},
-    "903906": {"name": "Steam Deck 256GB LCD", "storage": "256GB", "type": "LCD"},
-    "903907": {"name": "Steam Deck 512GB LCD", "storage": "512GB", "type": "LCD"},
     "1202542": {"name": "Steam Deck 512GB OLED", "storage": "512GB", "type": "OLED"},
     "1202547": {"name": "Steam Deck 1TB OLED", "storage": "1TB", "type": "OLED"},
 }
