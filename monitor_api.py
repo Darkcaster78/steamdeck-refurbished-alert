@@ -122,6 +122,7 @@ def save_state(state: dict):
 def main():
     print("=" * 60)
     print("🎮 Steam Deck Refurbished Monitor - API Edition")
+    send_signal("✅ TEST OK : GitHub Actions → Signal fonctionne parfaitement 🚀")  #test envoie signal
     print(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"🌍 Pays: {COUNTRY_CODE}")
     print("=" * 60)
